@@ -3,11 +3,14 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-
+if (! defined('API_V1')) {
+    define('API_V1', 'api/v1');
+}
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
+        apiPrefix: API_V1,
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -16,4 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withBroadcasting(
+        __DIR__ . '/../routes/channels.php',
+        ['prefix' => API_V1, 'middleware' => ['api', 'auth:sanctum']],
+    )
+    ->create();
