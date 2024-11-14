@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enum\RoleEnum;
 use Laravel\Sanctum\HasApiTokens;
 use App\Interfaces\BaseModelInterface;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
@@ -36,6 +38,14 @@ class User extends Authenticatable implements BaseModelInterface
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verified_at',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'role_id',
     ];
 
     /**
@@ -54,5 +64,25 @@ class User extends Authenticatable implements BaseModelInterface
     public function role():BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role?->name === RoleEnum::ADMIN->value;
+    }
+
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function journals(): HasMany
+    {
+        return $this->hasMany(Journal::class);
     }
 }

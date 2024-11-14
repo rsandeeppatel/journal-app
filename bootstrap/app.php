@@ -15,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->api(append: [
+            \App\Http\Middleware\CorsMiddleware::class,
+        ]);
+        $middleware->alias([
+            'parse.response' => \App\Http\Middleware\ParseResponseMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
